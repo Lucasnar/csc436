@@ -7,15 +7,15 @@ public var jumpButton : String = "space";
 public var jumpPower: float = 100.0f;
 private var canJump : boolean = true;
 
-function Start () {
+function Start() {
 
 	// This is the function that starts when the game starts.
-	
+			
 	anim = gameObject.GetComponent(Animator);
 
 }
 
-function Update () {
+function Update() {
 	
 	// This function calls every frame.
 	
@@ -44,15 +44,25 @@ function Update () {
 	
 	if(Input.GetKeyDown(jumpButton)){
 		
-		if(canJump){
+		if(canJump == true){
 		
 			anim.SetFloat("Jump", 1);
 			rigidbody2D.AddForce(transform.up * jumpPower);
+			canJump = false;
 			
 		}
-		
+				
 	}
 	
 	transform.position += transform.right * Input.GetAxis(axisName) * speed * Time.deltaTime;
 	
+}
+
+function OnCollisionEnter2D(coll : Collision2D){
+	
+	if(coll.gameObject.tag == "Ground"){
+	
+		anim.SetFloat("Jump", 0);
+		canJump = true;
+	}
 }
