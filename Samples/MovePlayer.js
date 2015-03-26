@@ -7,6 +7,9 @@ public var jumpButton : String = "space";
 public var jumpPower: float = 100.0f;
 private var canJump : boolean = true;
 
+var interactButton : String = "z";
+var hitBox : GameObject;
+
 function Start() {
 
 	// This is the function that starts when the game starts.
@@ -56,13 +59,27 @@ function Update() {
 	
 	transform.position += transform.right * Input.GetAxis(axisName) * speed * Time.deltaTime;
 	
+	if(Input.GetKeyDown(interactButton)){
+	
+		Hit();
+		
+	}
+}
+
+function Hit(){
+	
+	hitBox.collider2D.enabled = true;
+	yield WaitForSeconds(0.01);
+	hitBox.collider2D.enabled = false;
+	
 }
 
 function OnCollisionEnter2D(coll : Collision2D){
 	
-	if(coll.gameObject.tag == "Ground"){
+	if(coll.gameObject.tag == "Ground" || "Enemy"){
 	
 		anim.SetFloat("Jump", 0);
 		canJump = true;
+		
 	}
 }
