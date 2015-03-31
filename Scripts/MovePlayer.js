@@ -8,14 +8,18 @@ public var jumpPower: float = 100.0f;
 private var canJump : boolean = true;
 
 var interactButton : String = "z";
+var attackButton : String = "x";
 var hitBox : GameObject;
+var attackBox : GameObject;
 
 function Start() {
 
 	// This is the function that starts when the game starts.
 			
 	anim = gameObject.GetComponent(Animator);
-
+	hitBox.collider2D.enabled = false;
+	attackBox.collider2D.enabled = false;
+	
 }
 
 function Update() {
@@ -64,6 +68,13 @@ function Update() {
 		Hit();
 		
 	}
+	
+	if(Input.GetKeyDown(attackButton)){
+	
+		anim.SetFloat("Attack", 1);
+		Attack();
+		
+	}
 }
 
 function Hit(){
@@ -74,12 +85,40 @@ function Hit(){
 	
 }
 
+function Attack(){
+
+	yield WaitForSeconds(0.1);
+	attackBox.collider2D.enabled = true;
+	yield WaitForSeconds(0.1);
+	attackBox.collider2D.enabled = false;
+	anim.SetFloat("Attack", 0);
+
+}
+
+function Die(){
+	// Very simple; only to handle some things until I make a proper Die() function.
+
+	anim.SetFloat("Die", 1);
+	canJump = false;
+	speed = 0;
+	yield WaitForSeconds(2);
+	// Destroy(GameObject.FindWithTag("Player")); // Not needed for now; but later will be, I guess.
+	Application.LoadLevel(0);
+
+}
+
 function OnCollisionEnter2D(coll : Collision2D){
 	
 	if(coll.gameObject.tag == "Ground" || "Enemy"){
 	
 		anim.SetFloat("Jump", 0);
 		canJump = true;
+		
+	}
+	
+	if(coll.gameObject.tag == "Thorn"){
+	
+		Die();
 		
 	}
 }
