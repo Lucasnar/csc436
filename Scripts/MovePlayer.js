@@ -6,12 +6,14 @@ public var anim : Animator;
 public var jumpButton : String = "space";
 public var jumpPower: float = 100.0f;
 private var canJump : boolean = true;
+public var key1obtained : boolean = false;
+var health : int = 3;
 
 var interactButton : String = "z";
 var attackButton : String = "x";
 var hitBox : GameObject;
 var attackBox : GameObject;
-
+		
 function Start() {
 
 	// This is the function that starts when the game starts.
@@ -61,8 +63,6 @@ function Update() {
 				
 	}
 	
-	transform.position += transform.right * Input.GetAxis(axisName) * speed * Time.deltaTime;
-	
 	if(Input.GetKeyDown(interactButton)){
 	
 		Hit();
@@ -75,6 +75,42 @@ function Update() {
 		Attack();
 		
 	}
+	
+	
+	if (health == 3){
+	
+		gameObject.Find("Heart1").GetComponent(UI.Image).color.a = 1;
+		gameObject.Find("Heart2").GetComponent(UI.Image).color.a = 1;
+		gameObject.Find("Heart3").GetComponent(UI.Image).color.a = 1;
+	
+	}
+	
+	if (health == 2){
+	
+		gameObject.Find("Heart1").GetComponent(UI.Image).color.a = 0;
+		gameObject.Find("Heart2").GetComponent(UI.Image).color.a = 1;
+		gameObject.Find("Heart3").GetComponent(UI.Image).color.a = 1;
+	
+	}
+	
+	if (health == 1){
+		
+		gameObject.Find("Heart1").GetComponent(UI.Image).color.a = 0;
+		gameObject.Find("Heart2").GetComponent(UI.Image).color.a = 0;
+		gameObject.Find("Heart3").GetComponent(UI.Image).color.a = 1;
+	
+	}
+	
+	if (health == 0){
+	
+		gameObject.Find("Heart1").GetComponent(UI.Image).color.a = 0;
+		gameObject.Find("Heart2").GetComponent(UI.Image).color.a = 0;
+		gameObject.Find("Heart3").GetComponent(UI.Image).color.a = 0;
+		Die();
+		
+	}
+	
+	transform.position += transform.right * Input.GetAxis(axisName) * speed * Time.deltaTime;
 }
 
 function Hit(){
@@ -101,24 +137,59 @@ function Die(){
 	anim.SetFloat("Die", 1);
 	canJump = false;
 	speed = 0;
+	health = 0;
 	yield WaitForSeconds(2);
 	// Destroy(GameObject.FindWithTag("Player")); // Not needed for now; but later will be, I guess.
-	Application.LoadLevel(0);
+	Application.LoadLevel("Scene_1");
+
+}
+
+function Hurt(){
+
+	health -= 1;
 
 }
 
 function OnCollisionEnter2D(coll : Collision2D){
 	
-	if(coll.gameObject.tag == "Ground" || "Enemy"){
-	
+	if(coll.gameObject.tag == "Ground" || "Enemy" || "Enemytop" || "Thorn"){
+		
 		anim.SetFloat("Jump", 0);
 		canJump = true;
 		
 	}
 	
-	if(coll.gameObject.tag == "Thorn"){
-	
-		Die();
+	if(coll.gameObject.tag == "Key1"){
+		
+		key1obtained = true;
+		Destroy(coll.gameObject);
+		
 		
 	}
+	
+	if(coll.gameObject.tag == "Enemy"){
+		
+		rigidbody2D.AddForce(Vector2.up * 40);
+		Hurt();
+		
+	}
+	
+	if(coll.gameObject.tag == "Thorn" && health > 0){
+		
+		rigidbody2D.AddForce(Vector2.up * 40);
+		Hurt();
+		
+	}
+}
+
+function OnTriggerEnter2D(coll : Collider2D){
+
+		if(coll.gameObject.tag == "Enemytop"){
+		
+		anim.SetFloat("Jump", 0);
+		rigidbody2D.AddForce(Vector2.up * 100);
+		Destroy(coll.transform.root.gameObject);
+		
+	}
+
 }
