@@ -5,6 +5,7 @@ public var axisName : String = "Horizontal";
 public var anim : Animator;
 public var jumpButton : String = "space";
 public var jumpPower: float = 100.0f;
+public var pauseButton : String = "escape";
 private var canJump : boolean = true;
 public var key1obtained : boolean = false;
 var health : int = 3;
@@ -76,6 +77,25 @@ function Update() {
 		
 	}
 	
+	if(Input.GetKeyDown(pauseButton)){
+	
+		if(Time.timeScale != 0){
+		
+			Time.timeScale = 0;
+			gameObject.Find("GamePaused").GetComponent(UI.Image).color.a = 1;
+			EnableButtons();
+		
+		}
+		else{
+		
+			Time.timeScale = 1;
+			gameObject.Find("GamePaused").GetComponent(UI.Image).color.a = 0;
+			DisableButtons();
+			
+		
+		}	
+	
+	}	
 	
 	if (health == 3){
 	
@@ -113,6 +133,30 @@ function Update() {
 	transform.position += transform.right * Input.GetAxis(axisName) * speed * Time.deltaTime;
 }
 
+function EnableButtons(){
+
+	gameObject.Find("StartButton").GetComponent(UI.Button).interactable = true;
+	gameObject.Find("QuitButton").GetComponent(UI.Button).interactable = true;
+	
+	gameObject.Find("StartButton").GetComponent(UI.Image).color.a = 1;
+	gameObject.Find("TextStartButton").GetComponent(UI.Text).color.a = 1;
+	gameObject.Find("QuitButton").GetComponent(UI.Image).color.a = 1;
+	gameObject.Find("TextQuitButton").GetComponent(UI.Text).color.a = 1;
+
+}
+
+function DisableButtons(){
+
+	gameObject.Find("StartButton").GetComponent(UI.Button).interactable = false;
+	gameObject.Find("QuitButton").GetComponent(UI.Button).interactable = false;
+	
+	gameObject.Find("StartButton").GetComponent(UI.Image).color.a = 0;
+	gameObject.Find("TextStartButton").GetComponent(UI.Text).color.a = 0;
+	gameObject.Find("QuitButton").GetComponent(UI.Image).color.a = 0;
+	gameObject.Find("TextQuitButton").GetComponent(UI.Text).color.a = 0;
+
+}
+
 function Hit(){
 	
 	hitBox.collider2D.enabled = true;
@@ -132,17 +176,18 @@ function Attack(){
 }
 
 function Die(){
-	// Very simple; only to handle some things until I make a proper Die() function.
 
 	anim.SetFloat("Die", 1);
-	canJump = false;
 	speed = 0;
-	health = 0;
+	jumpPower = 0;
+	axisName = "None";
 	yield WaitForSeconds(2);
-	// Destroy(GameObject.FindWithTag("Player")); // Not needed for now; but later will be, I guess.
-	Application.LoadLevel("Scene_1");
+	Destroy(gameObject);
+	gameObject.Find("GameOver").GetComponent(UI.Image).color.a = 1;
+	EnableButtons();
 
 }
+
 
 function Hurt(){
 
