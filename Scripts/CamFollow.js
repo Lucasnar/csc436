@@ -5,6 +5,12 @@ var dampTime : float = 0.5;
 private var velocity = Vector3.zero;
 
 var target : Transform;
+
+function Start(){
+
+	target = gameObject.Find("Warrior_0").transform;
+
+}
   
 function Update () {
 
