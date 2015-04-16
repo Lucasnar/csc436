@@ -16,13 +16,13 @@ var hitBox : GameObject;
 var attackBox : GameObject;
 		
 function Start() {
-
+	
 	// This is the function that starts when the game starts.
 			
 	anim = gameObject.GetComponent(Animator);
 	hitBox.collider2D.enabled = false;
 	attackBox.collider2D.enabled = false;
-	
+	DontDestroyOnLoad(gameObject);	
 }
 
 function Update() {
@@ -32,8 +32,7 @@ function Update() {
 	var newScale : Vector3; // Unity uses Vector3 to calculate 3D Position and 	Direction.
 	
 	anim.SetFloat("Walk", Mathf.Abs(Input.GetAxis(axisName))); // Set the walk variable to the axis.
-	
-	
+		
 	// It changes the walk animation to the correct side.
 	
 	if(Input.GetAxis(axisName) < 0) {
@@ -57,6 +56,7 @@ function Update() {
 		if(canJump == true){
 		
 			anim.SetFloat("Jump", 1);
+			gameObject.Find("JumpSound").audio.Play();
 			rigidbody2D.AddForce(transform.up * jumpPower);
 			canJump = false;
 			
@@ -73,6 +73,7 @@ function Update() {
 	if(Input.GetKeyDown(attackButton)){
 	
 		anim.SetFloat("Attack", 1);
+		gameObject.Find("AttackSound").audio.Play();
 		Attack();
 		
 	}
@@ -126,8 +127,9 @@ function Update() {
 		gameObject.Find("Heart1").GetComponent(UI.Image).color.a = 0;
 		gameObject.Find("Heart2").GetComponent(UI.Image).color.a = 0;
 		gameObject.Find("Heart3").GetComponent(UI.Image).color.a = 0;
-		Die();
-		
+		if (speed != 0){
+			Die();
+		}		
 	}
 	
 	transform.position += transform.right * Input.GetAxis(axisName) * speed * Time.deltaTime;
@@ -162,6 +164,7 @@ function Hit(){
 	hitBox.collider2D.enabled = true;
 	yield WaitForSeconds(0.01);
 	hitBox.collider2D.enabled = false;
+	key1obtained = false;
 	
 }
 
@@ -181,17 +184,32 @@ function Die(){
 	speed = 0;
 	jumpPower = 0;
 	axisName = "None";
-	yield WaitForSeconds(2);
-	Destroy(gameObject);
+	gameObject.Find("GamePlayMusic").audio.Stop();
+	gameObject.Find("DeathSound").audio.Play();
+	gameObject.Find("FirstMusic_v2").audio.Play();
+	yield WaitForSeconds(1);
 	gameObject.Find("GameOver").GetComponent(UI.Image).color.a = 1;
-	EnableButtons();
+	EnableButtons();	
 
 }
 
 
 function Hurt(){
-
+	
+	gameObject.Find("HurtSound").audio.Play();
 	health -= 1;
+	yield WaitForSeconds(0.1);
+	gameObject.GetComponent(SpriteRenderer).color.a = 0.5;
+	yield WaitForSeconds(0.1);
+	gameObject.GetComponent(SpriteRenderer).color.a = 1;
+	yield WaitForSeconds(0.1);
+	gameObject.GetComponent(SpriteRenderer).color.a = 0.5;
+	yield WaitForSeconds(0.1);
+	gameObject.GetComponent(SpriteRenderer).color.a = 1;
+	yield WaitForSeconds(0.1);
+	gameObject.GetComponent(SpriteRenderer).color.a = 0.5;
+	yield WaitForSeconds(0.1);
+	gameObject.GetComponent(SpriteRenderer).color.a = 1;
 
 }
 
@@ -201,13 +219,15 @@ function OnCollisionEnter2D(coll : Collision2D){
 		
 		anim.SetFloat("Jump", 0);
 		canJump = true;
-		
+				
 	}
 	
 	if(coll.gameObject.tag == "Key1"){
 		
 		key1obtained = true;
 		Destroy(coll.gameObject);
+		gameObject.Find("KeySound").audio.Play();
+		gameObject.Find("Key_1Image").GetComponent(UI.Image).color.a = 1;
 		
 		
 	}
@@ -231,8 +251,9 @@ function OnTriggerEnter2D(coll : Collider2D){
 
 		if(coll.gameObject.tag == "Enemytop"){
 		
+		gameObject.Find("HurtSound").audio.Play();
 		anim.SetFloat("Jump", 0);
-		rigidbody2D.AddForce(Vector2.up * 100);
+		rigidbody2D.AddForce(Vector2.up * 40);
 		Destroy(coll.transform.root.gameObject);
 		
 	}
