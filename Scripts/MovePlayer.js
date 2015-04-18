@@ -22,7 +22,9 @@ function Start() {
 	anim = gameObject.GetComponent(Animator);
 	hitBox.collider2D.enabled = false;
 	attackBox.collider2D.enabled = false;
-	DontDestroyOnLoad(gameObject);	
+	DontDestroyOnLoad(gameObject);
+	
+	
 }
 
 function Update() {
@@ -162,9 +164,8 @@ function DisableButtons(){
 function Hit(){
 	
 	hitBox.collider2D.enabled = true;
-	yield WaitForSeconds(0.01);
+	yield WaitForSeconds(0.1);
 	hitBox.collider2D.enabled = false;
-	key1obtained = false;
 	
 }
 
@@ -188,8 +189,10 @@ function Die(){
 	gameObject.Find("DeathSound").audio.Play();
 	gameObject.Find("FirstMusic_v2").audio.Play();
 	yield WaitForSeconds(1);
+	Destroy(gameObject);
 	gameObject.Find("GameOver").GetComponent(UI.Image).color.a = 1;
-	EnableButtons();	
+	EnableButtons();
+		
 
 }
 
@@ -232,6 +235,16 @@ function OnCollisionEnter2D(coll : Collision2D){
 		
 	}
 	
+	if(coll.gameObject.tag == "Heart1"){
+		
+			if (health < 3){
+			
+				health += 1;
+			}
+			Destroy(coll.gameObject);
+		
+	}
+	
 	if(coll.gameObject.tag == "Enemy"){
 		
 		rigidbody2D.AddForce(Vector2.up * 40);
@@ -251,10 +264,10 @@ function OnTriggerEnter2D(coll : Collider2D){
 
 		if(coll.gameObject.tag == "Enemytop"){
 		
-		gameObject.Find("HurtSound").audio.Play();
-		anim.SetFloat("Jump", 0);
-		rigidbody2D.AddForce(Vector2.up * 40);
-		Destroy(coll.transform.root.gameObject);
+			gameObject.Find("HurtSound").audio.Play();
+			anim.SetFloat("Jump", 0);
+			rigidbody2D.AddForce(Vector2.up * 40);
+			Destroy(coll.transform.root.gameObject);
 		
 	}
 
