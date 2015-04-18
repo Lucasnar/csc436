@@ -1,15 +1,15 @@
 ﻿#pragma strict
 
 var dampTime : float = 0.5;
-
-private var velocity = Vector3.zero;
-
+var velocity = Vector3.zero;
 var target : Transform;
 
 function Start(){
-
+	
+	gameObject.Find("Warrior_0").transform.position = gameObject.transform.position;
+	gameObject.Find("Warrior_0").transform.position.z = 0;
 	target = gameObject.Find("Warrior_0").transform;
-
+	
 }
   
 function Update () {
