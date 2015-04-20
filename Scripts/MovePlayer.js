@@ -4,17 +4,18 @@ public var speed : int = 1.0;
 public var axisName : String = "Horizontal";
 public var anim : Animator;
 public var jumpButton : String = "space";
-public var jumpPower: float = 100.0f;
+public var jumpPower: float = 75.0f;
 public var pauseButton : String = "escape";
 private var canJump : boolean = true;
 public var key1obtained : boolean = false;
+var pressZToActiveEvent : boolean = false;
 var health : int = 3;
 
 var interactButton : String = "z";
 var attackButton : String = "x";
 var hitBox : GameObject;
 var attackBox : GameObject;
-		
+
 function Start() {
 	
 	// This is the function that starts when the game starts.
@@ -23,7 +24,8 @@ function Start() {
 	hitBox.collider2D.enabled = false;
 	attackBox.collider2D.enabled = false;
 	DontDestroyOnLoad(gameObject);
-	
+	StopControl();
+	gameObject.Find("BegginingText").GetComponent(UI.Text).color.a = 1;
 	
 }
 
@@ -68,7 +70,37 @@ function Update() {
 	
 	if(Input.GetKeyDown(interactButton)){
 	
-		Hit();
+		if (gameObject.Find("BegginingText").GetComponent(UI.Text).color.a == 1){
+		
+			gameObject.Find("BegginingText").GetComponent(UI.Text).color.a = 0;
+			gameObject.Find("ControlsText").GetComponent(UI.Text).color.a = 1;
+			pressZToActiveEvent = false;
+		
+		}/*
+		
+		else if (gameObject.Find("ControlsText").GetComponent(UI.Text).color.a == 1){
+		
+			gameObject.Find("ControlsText").GetComponent(UI.Text).color.a = 0;
+			StartControl();
+		
+		}*/
+		
+		else if (pressZToActiveEvent == true && !key1obtained){
+		
+			gameObject.Find("GetTheKeyText").GetComponent(UI.Text).color.a = 1;
+			pressZToActiveEvent = false;
+			StopControl();
+		
+		}	
+	
+		else{
+			gameObject.Find("ControlsText").GetComponent(UI.Text).color.a = 0;
+			gameObject.Find("GetTheKeyText").GetComponent(UI.Text).color.a = 0;
+			StartControl();
+			Hit();
+		
+		}
+		
 		
 	}
 	
@@ -94,8 +126,7 @@ function Update() {
 			Time.timeScale = 1;
 			gameObject.Find("GamePaused").GetComponent(UI.Image).color.a = 0;
 			DisableButtons();
-			
-		
+					
 		}	
 	
 	}	
@@ -216,6 +247,28 @@ function Hurt(){
 
 }
 
+function StopControl() {
+
+	speed = 0;
+	jumpPower = 0;
+	axisName = "None";
+	jumpButton = "equals";
+	attackButton = "equals";	
+	
+
+}
+
+function StartControl() {
+
+	speed = 1;
+	jumpPower = 75;
+	axisName = "Horizontal";
+	jumpButton = "space";
+	attackButton = "x";	
+	
+
+}
+
 function OnCollisionEnter2D(coll : Collision2D){
 	
 	if(coll.gameObject.tag == "Ground" || "Enemy" || "Enemytop" || "Thorn"){
@@ -252,6 +305,13 @@ function OnCollisionEnter2D(coll : Collision2D){
 		
 	}
 	
+	if(coll.gameObject.tag == "Rock"){
+		
+		rigidbody2D.AddForce(Vector2.up * 40);
+		Hurt();
+		
+	}
+	
 	if(coll.gameObject.tag == "Thorn" && health > 0){
 		
 		rigidbody2D.AddForce(Vector2.up * 40);
@@ -270,5 +330,56 @@ function OnTriggerEnter2D(coll : Collider2D){
 			Destroy(coll.transform.root.gameObject);
 		
 	}
+		if(coll.gameObject.tag == "StopRocks"){
+		
+			gameObject.Find("Rock1").collider2D.enabled = false;
+			gameObject.Find("Rock2").collider2D.enabled = false;
+			gameObject.Find("Rock3").collider2D.enabled = false;
+			
+			gameObject.Find("Rock1").GetComponent(SpriteRenderer).color.a = 0; 
+			gameObject.Find("Rock2").GetComponent(SpriteRenderer).color.a = 0;
+			gameObject.Find("Rock3").GetComponent(SpriteRenderer).color.a = 0;
+		}
+		
+		if(coll.gameObject.tag == "StartRocks"){
+		
+			gameObject.Find("Rock1").collider2D.enabled = true;
+			gameObject.Find("Rock2").collider2D.enabled = true;
+			gameObject.Find("Rock3").collider2D.enabled = true;
+			
+			gameObject.Find("Rock1").GetComponent(SpriteRenderer).color.a = 1; 
+			gameObject.Find("Rock2").GetComponent(SpriteRenderer).color.a = 1;
+			gameObject.Find("Rock3").GetComponent(SpriteRenderer).color.a = 1;
+		}
+		
+		if(coll.gameObject.tag == "SceneEntering"){
+		
+			StopControl();
+			gameObject.Find("BegginingText").GetComponent(UI.Text).color.a = 1;
+			Destroy(coll.gameObject);
+		
+		}
+		
+		if(coll.gameObject.tag == "GetTheKey"){
+		
+				pressZToActiveEvent = true;
+		
+		}
+		
+		if(coll.gameObject.tag == "Potion1"){
+		
+				Destroy(coll.gameObject);
+				Hurt();
+		
+		}
+}
+
+function OnTriggerExit2D(coll : Collider2D){
+
+	if(coll.gameObject.tag == "GetTheKey"){
+
+			pressZToActiveEvent = false;
+		
+		}
 
 }
