@@ -76,14 +76,7 @@ function Update() {
 			gameObject.Find("ControlsText").GetComponent(UI.Text).color.a = 1;
 			pressZToActiveEvent = false;
 		
-		}/*
-		
-		else if (gameObject.Find("ControlsText").GetComponent(UI.Text).color.a == 1){
-		
-			gameObject.Find("ControlsText").GetComponent(UI.Text).color.a = 0;
-			StartControl();
-		
-		}*/
+		}
 		
 		else if (pressZToActiveEvent == true && !key1obtained){
 		
@@ -300,21 +293,21 @@ function OnCollisionEnter2D(coll : Collision2D){
 	
 	if(coll.gameObject.tag == "Enemy"){
 		
-		rigidbody2D.AddForce(Vector2.up * 40);
+		rigidbody2D.AddForce(Vector2.up * 20);
 		Hurt();
 		
 	}
 	
 	if(coll.gameObject.tag == "Rock"){
 		
-		rigidbody2D.AddForce(Vector2.up * 40);
+		rigidbody2D.AddForce(Vector2.up * 20);
 		Hurt();
 		
 	}
 	
 	if(coll.gameObject.tag == "Thorn" && health > 0){
 		
-		rigidbody2D.AddForce(Vector2.up * 40);
+		rigidbody2D.AddForce(Vector2.up * 20);
 		Hurt();
 		
 	}
@@ -326,7 +319,7 @@ function OnTriggerEnter2D(coll : Collider2D){
 		
 			gameObject.Find("HurtSound").audio.Play();
 			anim.SetFloat("Jump", 0);
-			rigidbody2D.AddForce(Vector2.up * 40);
+			rigidbody2D.AddForce(Vector2.up * 20);
 			Destroy(coll.transform.root.gameObject);
 		
 	}
