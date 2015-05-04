@@ -11,23 +11,33 @@ function OnTriggerEnter2D(other : Collider2D){
 	{
 		
 		Destroy(other.gameObject);
+		Destroy(gameObject.Find("GetTheKeyText"));
+		keyScript.pressZToActiveEvent = false;
 		enterDoorText.GetComponent(UI.Text).color.a = 1;
 		keyScript.key1obtained = false;
 		gameObject.Find("DoorSound").audio.Play();
 		gameObject.Find("Key_1Image").GetComponent(UI.Image).color.a = 0;
 		keyScript.StopControl();
-		yield WaitForSeconds(5);
 		
 		if (Application.loadedLevelName == "Scene_1") {
-		
+			
+			yield WaitForSeconds(8);
 			Application.LoadLevel("Scene_2");
 		
 		}
 		
-		if (Application.loadedLevelName == "Scene_2") {
+		else if (Application.loadedLevelName == "Scene_2") {
+			
+			yield WaitForSeconds(8);
+			Application.LoadLevel("Scene_3");
+		
+		}
+		
+		else if (Application.loadedLevelName == "Scene_3") {
 		
 			
 			keyScript.EnableButtons();
+			gameObject.Find("AllLavas").GetComponent(Animator).animation.Stop();
 			yield WaitForSeconds(600);
 			keyScript.DisableButtons();
 			gameObject.Find("Warrior_0").transform.position = Vector3(100, 100, 100);
@@ -36,5 +46,16 @@ function OnTriggerEnter2D(other : Collider2D){
 		}
 		
 		keyScript.StartControl();
+	}
+	
+	if(other.gameObject.tag == "Lever"){
+		
+		var leverPosition : Vector3 = other.transform.position;
+		Destroy(other.gameObject);
+		gameObject.Find("Lever_1").transform.position = leverPosition;
+		gameObject.Find("DoorSound").audio.Play();
+		gameObject.Find("Chains").GetComponent(Animator).SetBool("LeverPulled", true);
+		
+		
 	}
 }
