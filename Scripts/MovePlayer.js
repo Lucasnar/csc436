@@ -71,7 +71,7 @@ function Update() {
 	if(Input.GetKeyDown(interactButton)){
 	
 		if (gameObject.Find("BegginingText").GetComponent(UI.Text).color.a == 1){
-		
+			
 			gameObject.Find("BegginingText").GetComponent(UI.Text).color.a = 0;
 			gameObject.Find("ControlsText").GetComponent(UI.Text).color.a = 1;
 			pressZToActiveEvent = false;
@@ -89,6 +89,7 @@ function Update() {
 		else{
 			gameObject.Find("ControlsText").GetComponent(UI.Text).color.a = 0;
 			gameObject.Find("GetTheKeyText").GetComponent(UI.Text).color.a = 0;
+			Time.timeScale = 1;
 			StartControl();
 			Hit();
 		
@@ -164,24 +165,30 @@ function Update() {
 function EnableButtons(){
 
 	gameObject.Find("StartButton").GetComponent(UI.Button).interactable = true;
+	// gameObject.Find("RestartSceneButton").GetComponent(UI.Button).interactable = true;
 	gameObject.Find("QuitButton").GetComponent(UI.Button).interactable = true;
 	
 	gameObject.Find("StartButton").GetComponent(UI.Image).color.a = 1;
 	gameObject.Find("TextStartButton").GetComponent(UI.Text).color.a = 1;
 	gameObject.Find("QuitButton").GetComponent(UI.Image).color.a = 1;
 	gameObject.Find("TextQuitButton").GetComponent(UI.Text).color.a = 1;
+	// gameObject.Find("RestartSceneButton").GetComponent(UI.Image).color.a = 1;
+	// gameObject.Find("TextRestartSceneButton").GetComponent(UI.Text).color.a = 1;
 
 }
 
 function DisableButtons(){
 
 	gameObject.Find("StartButton").GetComponent(UI.Button).interactable = false;
+	// gameObject.Find("RestartSceneButton").GetComponent(UI.Button).interactable = false;
 	gameObject.Find("QuitButton").GetComponent(UI.Button).interactable = false;
 	
 	gameObject.Find("StartButton").GetComponent(UI.Image).color.a = 0;
 	gameObject.Find("TextStartButton").GetComponent(UI.Text).color.a = 0;
 	gameObject.Find("QuitButton").GetComponent(UI.Image).color.a = 0;
 	gameObject.Find("TextQuitButton").GetComponent(UI.Text).color.a = 0;
+	// gameObject.Find("RestartSceneButton").GetComponent(UI.Image).color.a = 0;
+	// gameObject.Find("TextRestartSceneButton").GetComponent(UI.Text).color.a = 0;
 
 }
 
@@ -213,11 +220,11 @@ function Die(){
 	gameObject.Find("DeathSound").audio.Play();
 	gameObject.Find("FirstMusic_v2").audio.Play();
 	yield WaitForSeconds(1);
+	Time.timeScale = 0;
 	Destroy(gameObject);
 	gameObject.Find("GameOver").GetComponent(UI.Image).color.a = 1;
 	EnableButtons();
-		
-
+	
 }
 
 
@@ -264,11 +271,23 @@ function StartControl() {
 
 function OnCollisionEnter2D(coll : Collision2D){
 	
-	if(coll.gameObject.tag == "Ground" || "Enemy" || "Enemytop" || "Thorn"){
+	
+	if(coll.gameObject.tag == "Ground"){
 		
 		anim.SetFloat("Jump", 0);
 		canJump = true;
-				
+	}
+	
+	if(coll.gameObject.tag == "Enemy"){
+
+		anim.SetFloat("Jump", 0);
+		canJump = true;
+	}
+	
+	if(coll.gameObject.tag == "Enemytop"){
+		
+		anim.SetFloat("Jump", 0);
+		canJump = true;
 	}
 	
 	if(coll.gameObject.tag == "Key1"){
@@ -286,31 +305,40 @@ function OnCollisionEnter2D(coll : Collision2D){
 			if (health < 3){
 			
 				health += 1;
+				
 			}
+			gameObject.Find("HeartSound").audio.Play();
 			Destroy(coll.gameObject);
 		
 	}
 	
-	if(coll.gameObject.tag == "Enemy"){
+	if(coll.gameObject.tag == "Enemy" && health > 0){
 		
 		rigidbody2D.AddForce(Vector2.up * 20);
 		Hurt();
 		
 	}
 	
-	if(coll.gameObject.tag == "Rock"){
-		
-		rigidbody2D.AddForce(Vector2.up * 20);
+	if(coll.gameObject.tag == "Rock" && health > 0){
+
 		Hurt();
 		
 	}
 	
 	if(coll.gameObject.tag == "Thorn" && health > 0){
 		
-		rigidbody2D.AddForce(Vector2.up * 20);
+		rigidbody2D.AddForce(Vector2.up * 40);
 		Hurt();
 		
 	}
+
+	if(coll.gameObject.tag == "Lava" && health > 0){
+		
+		rigidbody2D.AddForce(Vector2.up * 50);
+		Hurt();
+		
+	}
+	
 }
 
 function OnTriggerEnter2D(coll : Collider2D){
@@ -319,10 +347,10 @@ function OnTriggerEnter2D(coll : Collider2D){
 		
 			gameObject.Find("HurtSound").audio.Play();
 			anim.SetFloat("Jump", 0);
-			rigidbody2D.AddForce(Vector2.up * 20);
+			rigidbody2D.AddForce(Vector2.up * 80);
 			Destroy(coll.transform.root.gameObject);
+		}
 		
-	}
 		if(coll.gameObject.tag == "StopRocks"){
 		
 			gameObject.Find("Rock1").collider2D.enabled = false;
@@ -346,7 +374,8 @@ function OnTriggerEnter2D(coll : Collider2D){
 		}
 		
 		if(coll.gameObject.tag == "SceneEntering"){
-		
+			
+			Time.timeScale = 0;
 			StopControl();
 			gameObject.Find("BegginingText").GetComponent(UI.Text).color.a = 1;
 			Destroy(coll.gameObject);
