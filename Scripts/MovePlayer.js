@@ -165,30 +165,24 @@ function Update() {
 function EnableButtons(){
 
 	gameObject.Find("StartButton").GetComponent(UI.Button).interactable = true;
-	// gameObject.Find("RestartSceneButton").GetComponent(UI.Button).interactable = true;
 	gameObject.Find("QuitButton").GetComponent(UI.Button).interactable = true;
 	
 	gameObject.Find("StartButton").GetComponent(UI.Image).color.a = 1;
 	gameObject.Find("TextStartButton").GetComponent(UI.Text).color.a = 1;
 	gameObject.Find("QuitButton").GetComponent(UI.Image).color.a = 1;
 	gameObject.Find("TextQuitButton").GetComponent(UI.Text).color.a = 1;
-	// gameObject.Find("RestartSceneButton").GetComponent(UI.Image).color.a = 1;
-	// gameObject.Find("TextRestartSceneButton").GetComponent(UI.Text).color.a = 1;
 
 }
 
 function DisableButtons(){
 
 	gameObject.Find("StartButton").GetComponent(UI.Button).interactable = false;
-	// gameObject.Find("RestartSceneButton").GetComponent(UI.Button).interactable = false;
 	gameObject.Find("QuitButton").GetComponent(UI.Button).interactable = false;
 	
 	gameObject.Find("StartButton").GetComponent(UI.Image).color.a = 0;
 	gameObject.Find("TextStartButton").GetComponent(UI.Text).color.a = 0;
 	gameObject.Find("QuitButton").GetComponent(UI.Image).color.a = 0;
 	gameObject.Find("TextQuitButton").GetComponent(UI.Text).color.a = 0;
-	// gameObject.Find("RestartSceneButton").GetComponent(UI.Image).color.a = 0;
-	// gameObject.Find("TextRestartSceneButton").GetComponent(UI.Text).color.a = 0;
 
 }
 
@@ -265,8 +259,26 @@ function StartControl() {
 	axisName = "Horizontal";
 	jumpButton = "space";
 	attackButton = "x";	
+	interactButton = "z";
 	
 
+}
+
+function LastScene() {
+
+	gameObject.Find("VillainText1").GetComponent(UI.Text).color.a = 1;
+	gameObject.Find("Villain3").GetComponent(Animator).SetBool("Villain3Movement", true);
+	yield WaitForSeconds(5);
+	gameObject.Find("VillainText1").GetComponent(UI.Text).color.a = 0;
+	yield WaitForSeconds(10);
+	gameObject.Find("VillainText2").GetComponent(UI.Text).color.a = 1;
+	yield WaitForSeconds(5);
+	gameObject.Find("VillainText2").GetComponent(UI.Text).color.a = 0;
+	yield WaitForSeconds(3);
+	gameObject.Find("VillainText3").GetComponent(UI.Text).color.a = 1;
+	yield WaitForSeconds(3);
+	gameObject.Find("VillainText3").GetComponent(UI.Text).color.a = 0;
+	StartControl();
 }
 
 function OnCollisionEnter2D(coll : Collision2D){
@@ -339,6 +351,12 @@ function OnCollisionEnter2D(coll : Collision2D){
 		
 	}
 	
+	if(coll.gameObject.tag == "Projectile"){
+	
+		Hurt();
+	
+	}
+	
 }
 
 function OnTriggerEnter2D(coll : Collider2D){
@@ -394,6 +412,24 @@ function OnTriggerEnter2D(coll : Collider2D){
 				Hurt();
 		
 		}
+		
+		if(coll.gameObject.tag == "CameraPersTo16"){
+			
+			gameObject.Find("Main Camera").camera.fieldOfView = 16;
+		
+		}
+		
+		if(coll.gameObject.tag == "ActiveLastScene"){
+			
+			gameObject.Find("GamePlayMusic").audio.Stop();
+			Destroy(coll.gameObject);
+			Destroy(gameObject.Find("CameraPersTo16"));
+			interactButton = "equals";
+			StopControl();
+			LastScene();
+		
+		}
+
 }
 
 function OnTriggerExit2D(coll : Collider2D){
@@ -401,6 +437,12 @@ function OnTriggerExit2D(coll : Collider2D){
 	if(coll.gameObject.tag == "GetTheKey"){
 
 			pressZToActiveEvent = false;
+		
+		}
+	
+	if(coll.gameObject.tag == "CameraPersTo16"){
+		
+			gameObject.Find("Main Camera").camera.fieldOfView = 11;
 		
 		}
 
